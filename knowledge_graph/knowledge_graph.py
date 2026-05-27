@@ -145,17 +145,16 @@ def create_kg_triples(
 
             output_pickle_path = os.path.join(output_directory, f"{subdir_name}_triples.pkl")
 
-            futures = [
-                executor.submit(triple_generator.generate_triples, json_filename) for json_filename in json_filenames
-            ]
+            future_to_filename = {
+                executor.submit(triple_generator.generate_triples, json_filename): json_filename
+                for json_filename in json_filenames
+            }
 
-            for future in as_completed(futures):
+            for future in as_completed(future_to_filename):
+                json_filename = future_to_filename[future]
                 try:
                     triples_with_document = future.result()
                     all_triples_with_documents.extend(triples_with_document)
-                    json_filename = json_filenames[
-                        futures.index(future)
-                    ]  # Get the filename associated with the future
                     LOGGER.info(f"Finished processing file {json_filename}")
                 except Exception as e:
                     LOGGER.error(f"An error occurred while processing {json_filename}: {e}")
@@ -192,6 +191,22 @@ class KGGenerator:
         self.llm = llm
         self._verbose = verbose
 
+    def _clean_triples_str(self, triples_str: str) -> str:
+        """Strip markdown fences and collapse all newlines to spaces."""
+        import re
+        triples_str = triples_str.strip()
+        triples_str = re.sub(r'^```(?:python)?\s*', '', triples_str)
+        triples_str = re.sub(r'\s*```$', '', triples_str)
+        triples_str = triples_str.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
+        return triples_str.strip()
+
+    def _extract_triples_regex(self, triples_str: str) -> List[Tuple[str, str, str]]:
+        """Fallback: extract triples with regex when ast.literal_eval fails."""
+        import re
+        pattern = r'''\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]\s*\)'''
+        matches = re.findall(pattern, triples_str)
+        return [(s, p, o) for s, p, o in matches]
+
     @retry(stop_max_attempt_number=3, retry_on_exception=retry_if_ast_eval_error)
     def generate_triples(self, json_filename: str) -> List[Tuple[str, str, str, str]]:
         """Generate and evaluate triples from ontology data file."""
@@ -199,7 +214,12 @@ class KGGenerator:
             ontology_data_str = json_file.read()
         prompt = KG_TRIPLET_ONTOLOGY_EXTRACT_PROMPT.format(data=ontology_data_str)
         triples_str = self.llm.invoke(prompt).content
-        triples = ast.literal_eval(triples_str)
+        triples_str = self._clean_triples_str(triples_str)
+        try:
+            triples = ast.literal_eval(triples_str)
+        except (SyntaxError, ValueError):
+            triples = self._extract_triples_regex(triples_str)
+            LOGGER.warning(f"Used regex fallback for {json_filename}, extracted {len(triples)} triples")
         document_name = os.path.basename(json_filename).replace(".jsonld", "")
         triples_with_document = [(document_name,) + triple for triple in triples]
         return triples_with_document

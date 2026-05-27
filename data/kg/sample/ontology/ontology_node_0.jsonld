@@ -1,0 +1,133 @@
+{
+    "@context": {
+        "schema": "http://schema.org/",
+        "cropCult": "http://crop-cultivation.org/"
+    },
+    "@graph": [
+        {
+            "@id": "cropCult:Crop",
+            "@type": "schema:Thing",
+            "name": "Soybean",
+            "has_types": [
+                {
+                    "@id": "cropCult:CropType",
+                    "name": "Legume",
+                    "used_for": "Food and oil"
+                }
+            ],
+            "has_growing_zones": [
+                {
+                    "@id": "cropCult:CropGrowingZone",
+                    "name": "Central India",
+                    "has_regions": [
+                        "Madhya Pradesh",
+                        "Maharashtra",
+                        "Rajasthan"
+                    ],
+                    "has_seed_recommendations": {
+                        "@id": "cropCult:SeedList",
+                        "variety_name": [
+                            "JS 335",
+                            "JS 95-60",
+                            "JS 93-05"
+                        ],
+                        "has_early_sowing_time": {
+                            "@id": "cropCult:SowingTime",
+                            "start_date": "2023-06-25",
+                            "end_date": "2023-07-05"
+                        },
+                        "has_late_sowing_time": {
+                            "@id": "cropCult:SowingTime",
+                            "start_date": "2023-07-25",
+                            "end_date": "2023-08-10"
+                        },
+                        "has_seeding_rate": {
+                            "@id": "schema:QuantitativeValue",
+                            "value": "30 kg per hectare"
+                        },
+                        "has_fertilizer_application_requirements": {
+                            "@id": "cropCult:Fertilization",
+                            "nutrient_name": "Nitrogen",
+                            "quantity": "20 kg per hectare",
+                            "stage_of_application": "At the time of sowing"
+                        }
+                    }
+                }
+            ],
+            "has_temperature_requirements": {
+                "@id": "cropCult:TemperatureRequirements",
+                "for_germination": "25-30¡ÆC",
+                "for_flowering": "20-25¡ÆC",
+                "for_grain_filling": "20-25¡ÆC",
+                "negative_effect": "Above 35¡ÆC"
+            },
+            "has_soil_requirements": {
+                "@id": "cropCult:SoilRequirements",
+                "soil_type_name": "Loamy to clayey loam",
+                "avoid_soil_type": "Sandy soil",
+                "for_water": "Moderate water holding capacity",
+                "for_nutrients": "Rich in organic matter"
+            },
+            "has_land_preperation_requirements": {
+                "@id": "cropCult:LandPreparation",
+                "instructions": "Thorough ploughing and planking to achieve a fine tilth stage at field capacity.",
+                "with_soil_moisture": "Moist but not waterlogged"
+            },
+            "seed_germination_test_requirements_are": "More than 80% germination",
+            "has_seed_fungicide_requirements": {
+                "@id": "cropCult:Fungicide",
+                "name": "Thiram or Carbendazim",
+                "quantity": "2 g per kg of seeds"
+            },
+            "needs_seed_sowing_spacing": {
+                "@id": "cropCult:SeedSpacing",
+                "sowing_time": "Kharif season",
+                "value": "30 cm x 10 cm",
+                "depth": "3-4 cm",
+                "method": "Dibbling"
+            },
+            "weed_management_needs_are": {
+                "@id": "cropCult:WeedManagement",
+                "weed_name": "Phalaris minor",
+                "weed_types": [
+                    "Grass",
+                    "Broadleaf",
+                    "Sedge"
+                ],
+                "herbicides": {
+                    "@id": "cropCult:HerbicideList",
+                    "name": "Glyphosate",
+                    "quantity": "1.0 kg per hectare",
+                    "stage": "Post-emergence"
+                }
+            },
+            "needs_irrigation_schedule": {
+                "@id": "cropCult:IrrigationRequirement",
+                "quantity": "500-600 mm",
+                "stage_of_application": "During flowering and pod development stage"
+            },
+            "needs_disease_treatements": {
+                "@id": "cropCult:DiseaseTreatements",
+                "disease_name": "Charcoal rot",
+                "disease_symptoms": "Symptoms of charcoal rot",
+                "disease_control": {
+                    "@id": "cropCult:Fungicide",
+                    "name": "Carbendazim",
+                    "quantity": "2 g per litre of water"
+                }
+            },
+            "needs_pest_treatements": {
+                "@id": "cropCult:PestTreatements",
+                "pest_name": "Tobacco caterpillar",
+                "pest_symptoms": "Symptoms of tobacco caterpillar",
+                "pest_control": {
+                    "@id": "cropCult:PesticideList",
+                    "name": "Quinalphos",
+                    "quantity": "2 ml per litre of water"
+                }
+            },
+            "harvesting_guidelines_are": "Harvest when 85-90% of pods turn brown and hard.",
+            "storage_guidelines_are": "Store in a cool and dry place."
+        }
+    ]
+}

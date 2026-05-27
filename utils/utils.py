@@ -31,7 +31,7 @@ import json
 import numpy as np
 import itertools
 from collections import defaultdict
-from langchain_together import ChatTogether, TogetherEmbeddings, Together
+# from langchain_together import ChatTogether, TogetherEmbeddings, Together
 
 MAX_TOKENS = 4096 # 12288 4096
 OPENAI_CONFIG = '/workspace/farmvibes-llm/agkgcopilot/openai.yaml'
@@ -111,48 +111,31 @@ def load_llm_and_embeds(model_config: Dict[str, Any], embedding_config: Dict[str
     api_key = model_config.get("api_key") or os.getenv("OPENAI_API_KEY")
     deployment_name = model_config.get('deployment_name') or os.getenv(model_config.get("deployment_name_env_var", ""))
 
-    if api_type in ['azure', 'openai']:
-        if not (resource_endpoint and api_key):
-            # Use managed identity if API key is not available but endpoint is
-            if resource_endpoint and not api_key:
-                credential = DefaultAzureCredential()
-                token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
-                llm = AzureChatOpenAI(
-                    azure_endpoint=resource_endpoint,
-                    openai_api_version=api_version,
-                    azure_ad_token_provider=token_provider,
-                    deployment_name=deployment_name,
-                    temperature=0.0,
-                    max_retries=15,
-                    max_tokens=MAX_TOKENS,
-                )
-            else:
-                llm = ChatOpenAI(
-                    api_key=api_key,
-                    model=deployment_name,
-                    temperature=0.0,
-                    max_retries=15,
-                    max_tokens=MAX_TOKENS,
-                )
-            
-            # raise ValueError("Required connection details are missing.")
-        else:
-            llm = AzureChatOpenAI(
-                azure_endpoint=resource_endpoint,
-                openai_api_version=api_version,
-                openai_api_key=api_key,
-                openai_api_type=api_type,
-                deployment_name=deployment_name,
-                temperature=0.0,
-                max_retries=15,
-                max_tokens=MAX_TOKENS,
-            )
-    elif api_type == 'llama':
-        llm = ChatTogether(
-                model=deployment_name,
-                temperature=0.0,
-                max_tokens=MAX_TOKENS,
+    if api_type == 'openai':
+        llm = ChatOpenAI(
+            api_key=api_key,
+            model=deployment_name,
+            temperature=0.0,
+            max_retries=15,
+            max_tokens=MAX_TOKENS,
         )
+
+    elif api_type == 'azure':
+        llm = AzureChatOpenAI(
+            azure_endpoint=resource_endpoint,
+            openai_api_version=api_version,
+            openai_api_key=api_key,
+            deployment_name=deployment_name,
+            temperature=0.0,
+            max_retries=15,
+            max_tokens=MAX_TOKENS,
+        )
+# elif api_type == 'llama':
+#     llm = ChatTogether(
+#             model=deployment_name,
+#             temperature=0.0,
+#             max_tokens=MAX_TOKENS,
+#     )
 
     if embedding_config['api_type'] == 'azure':
         emb_api_key = embedding_config.get('api_key') or os.getenv('OPENAI_API_KEY')
@@ -165,7 +148,7 @@ def load_llm_and_embeds(model_config: Dict[str, Any], embedding_config: Dict[str
                 openai_api_version=embedding_config.get('api_version') or os.getenv(embedding_config.get('api_version_env_var', "")),
                 openai_api_key=emb_api_key,
                 model=embedding_config.get('deployment_name') or os.getenv(embedding_config.get('deployment_name_env_var', "")),
-                check_embedding_ctx_length=False,
+                # check_embedding_ctx_length=False,
                 chunk_size=1000,
             )
         else:
@@ -177,14 +160,14 @@ def load_llm_and_embeds(model_config: Dict[str, Any], embedding_config: Dict[str
                 openai_api_version=embedding_config.get('api_version') or os.getenv(embedding_config.get('api_version_env_var', "")),
                 azure_ad_token_provider=token_provider,
                 model=embedding_config.get('deployment_name') or os.getenv(embedding_config.get('deployment_name_env_var', "")),
-                check_embedding_ctx_length=False,
+                # check_embedding_ctx_length=False,
                 chunk_size=1000,
             )
     elif embedding_config['api_type'] == 'openai':
         embedding_llm = OpenAIEmbeddings(
             openai_api_key=embedding_config.get('api_key') or os.getenv('OPENAI_API_KEY'),
             model=embedding_config.get('deployment_name') or os.getenv(embedding_config.get('deployment_name_env_var', "")),
-            check_embedding_ctx_length=False,
+            # check_embedding_ctx_length=False,
             chunk_size=1000,
         )
     else:
@@ -208,47 +191,23 @@ def create_service_context(model_config: Dict[str, Any], embedding_config: Dict[
     api_key = model_config.get("api_key") or os.getenv("OPENAI_API_KEY")
     deployment_name = model_config.get('deployment_name') or os.getenv(model_config.get("deployment_name_env_var", ""))
 
-    if api_type in ['azure', 'openai']:
-        if not (resource_endpoint and api_key):
-            # Use managed identity if API key is not available but endpoint is
-            if resource_endpoint and not api_key:
-                credential = DefaultAzureCredential()
-                token_provider = get_bearer_token_provider(credential, "https://cognitiveservices.azure.com/.default")
-                llm = AzureChatOpenAI(
-                    azure_endpoint=resource_endpoint,
-                    openai_api_version=api_version,
-                    azure_ad_token_provider=token_provider,
-                    deployment_name=deployment_name,
-                    temperature=0.0,
-                    max_retries=15,
-                    max_tokens=MAX_TOKENS,
-                )
-            else:
-                llm = ChatOpenAI(
-                    api_key=api_key,
-                    model=deployment_name,
-                    temperature=0.0,
-                    max_retries=15,
-                    max_tokens=MAX_TOKENS,
-                )
-            
-            # raise ValueError("Required connection details are missing.")
-        else:
-            llm = AzureChatOpenAI(
-                azure_endpoint=resource_endpoint,
-                openai_api_version=api_version,
-                openai_api_key=api_key,
-                openai_api_type=api_type,
-                deployment_name=deployment_name,
-                temperature=0.0,
-                max_retries=15,
-                max_tokens=MAX_TOKENS,
-            )
-    elif api_type == 'llama':
-        llm = ChatTogether(
-                model=deployment_name,
-                temperature=0.0,
-                max_tokens=MAX_TOKENS,
+    if api_type == 'openai':
+        llm = ChatOpenAI(
+            api_key=api_key,
+            model=deployment_name,
+            temperature=0.0,
+            max_retries=15,
+            max_tokens=MAX_TOKENS,
+        )
+    elif api_type == 'azure':
+        llm = AzureChatOpenAI(
+            azure_endpoint=resource_endpoint,
+            openai_api_version=api_version,
+            openai_api_key=api_key,
+            deployment_name=deployment_name,
+            temperature=0.0,
+            max_retries=15,
+            max_tokens=MAX_TOKENS,
         )
 
     if embedding_config['api_type'] == 'azure':
@@ -262,7 +221,7 @@ def create_service_context(model_config: Dict[str, Any], embedding_config: Dict[
                 openai_api_version=embedding_config.get('api_version') or os.getenv(embedding_config.get('api_version_env_var', "")),
                 openai_api_key=emb_api_key,
                 model=embedding_config.get('deployment_name') or os.getenv(embedding_config.get('deployment_name_env_var', "")),
-                check_embedding_ctx_length=False,
+                # check_embedding_ctx_length=False,
                 chunk_size=1000,
             )
         else:
@@ -274,14 +233,14 @@ def create_service_context(model_config: Dict[str, Any], embedding_config: Dict[
                 openai_api_version=embedding_config.get('api_version') or os.getenv(embedding_config.get('api_version_env_var', "")),
                 azure_ad_token_provider=token_provider,
                 model=embedding_config.get('deployment_name') or os.getenv(embedding_config.get('deployment_name_env_var', "")),
-                check_embedding_ctx_length=False,
+                # check_embedding_ctx_length=False,
                 chunk_size=1000,
             )
     elif embedding_config['api_type'] == 'openai':
         embedding_llm = OpenAIEmbeddings(
             openai_api_key=embedding_config.get('api_key') or os.getenv('OPENAI_API_KEY'),
             model=embedding_config.get('deployment_name') or os.getenv(embedding_config.get('deployment_name_env_var', "")),
-            check_embedding_ctx_length=False,
+            # check_embedding_ctx_length=False,
             chunk_size=1000,
         )
     else:

@@ -9,7 +9,7 @@ from query_engine.ontograph_query_engine import OntoHyperGraphQueryEngine
 from query_engine.ontograph_query_engine_copy import OntoGraphQueryEngine
 from query_engine.full_onto_query_engine import FullOntoQueryEngine
 from query_engine.raptor_query_engine import RaptorQueryEngine
-from query_engine.graphrag_query_engine import GraphRAGQueryEngine
+# from query_engine.graphrag_query_engine import GraphRAGQueryEngine
 
 __all__ = [
     "KnowledgeGraphListQueryEngine",

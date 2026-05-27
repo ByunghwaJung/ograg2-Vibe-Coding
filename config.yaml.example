@@ -1,0 +1,30 @@
+model:
+  api_base: https://api.openai.com/v1
+  api_key:   # api_keys.yaml에서 자동으로 설정됨
+  deployment_name: gpt-4o-mini
+  api_type: openai
+  api_version: "2024-08-06"
+
+embedding_model:
+  api_base: https://api.openai.com/v1
+  api_key:   # api_keys.yaml에서 자동으로 설정됨
+  deployment_name: text-embedding-3-small
+  api_type: openai
+  api_version: "2024-08-06"
+
+data:
+  documents_dir: data/md/sample
+  ontology_path: data/ontology/farm_cropcultivation_schema_ontology_jsonld.json
+  kg_storage_path: data/kg/soybean
+  index_dir: index_openai/vector_soybean
+  subdir: false
+  smart_pdf: true
+  chunk_size: 8192
+
+query:
+  method: ontohypergraph-rag
+  batch_size: 5
+  mode: json
+  questions_file: ""
+  answers_file: outputs/answers.json
+  hyperparams: {}

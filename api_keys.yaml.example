@@ -1,9 +1,0 @@
-OPENAI_API_KEY: sk-proj-your-openai-api-key-here
-
-# Azure OpenAI (선택사항)
-# AZURE_API_KEY: your-azure-api-key
-# AZURE_API_BASE: https://your-resource.openai.azure.com/
-# AZURE_API_VERSION: "2024-08-06"
-
-# Together AI (선택사항, llama 모델 사용 시)
-# TOGETHER_API_KEY: your-together-api-key

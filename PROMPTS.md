@@ -247,3 +247,28 @@ python -m ograg.pipeline
 | 검색 단위 | 청크 벡터 | HyperNode (key-value 팩트 쌍) |
 | 검색 방법 | Top-k 코사인 유사도 | Greedy Set Cover |
 | 컨텍스트 | 원문 청크 | 구조화된 팩트 딕셔너리 |
+
+---
+
+## 추가 질의응답 예시
+
+테스트 도메인: 밀(Wheat) 재배 정보 / 모델: gpt-4o-mini
+
+```
+Q: What is the scientific name of wheat?
+A: The scientific name of wheat is Triticum aestivum.
+
+Q: How much rainfall does wheat need?
+A: Wheat needs 450-650 mm of rainfall.
+
+Q: What are the storage conditions for wheat?
+A: The storage conditions for wheat are cool, dry conditions at below 12% moisture content.
+
+Q: 밀 재배에 적합한 토양 조건은?
+A: 밀 재배에 적합한 토양 조건은 잘 배수되는 양토(롬)입니다.
+
+Q: 밀 씨앗 보관 방법을 알려줘
+A: 밀 씨앗은 12% 미만의 수분 함량을 유지하며 시원하고 건조한 환경에서 보관해야 합니다.
+```
+
+→ 영어·한국어 질문 모두 정상 답변 생성 확인
